@@ -1,5 +1,138 @@
-@import url("https://fonts.googleapis.com/css?family=Tangerine");
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Henny+Penny&display=swap');
 *{
     padding: 0px;
     margin: 0px;
+}
+.header{
+    background-color: #E3E6F3;
+    box-shadow: 0px 10px  rgba(0, 0, 0,0.06); 
+    height: 100px;
+    align-items: center;
+    z-index: 999;
+    position: sticky;
+    top: 0%;
+    left: 0%;
+}
+.header .nav .logo{
+    position: absolute;
+    text-decoration: none;
+    font-family: 'Great Vibes', cursive;
+    font-family: 'Henny Penny', cursive;
+    margin: 25px 40px;
+    font-size: xx-large;
+}
+.header .nav .nav-bar{
+    float: right;
+}
+.header .nav .nav-bar ul li{
+    display: inline-block;
+    font-size: larger;
+    margin: 30px;
+    list-style: none;
+}
+.header .nav .nav-bar ul li a{
+    text-align: center;
+    text-decoration: none;
+    padding: 20px;
+}
+.header .nav .nav-bar ul li a:hover,.header .nav .nav-bar ul li a:active{
+    color:white;
+    background-color:lightblue;
+    transition: 2s ease-in-out;
+}
+.main .hero{
+    background-image: url('./images/pop.jpg');
+    height: 88vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 5% left 150%;
+}
+.main .hero .div{
+    position: absolute;
+    padding: 100px 100px;
+    margin-top: 100px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+.main .hero .div h1{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 40px;
+    padding-bottom: 15px;
+    color: green;
+}
+.main .hero .div h2{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0px 0px 15px;
+    font-size: 45px;
+
+}
+.main .hero .div h4{
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.main .hero .div p{
+    font-style: italic;
+    font-family: 'Courier New', Courier, monospace;
+}
+.main .hero .div .btn{
+    padding: 15px;
+    border: none;
+    font-size: x-large;
+    font-family: 'Times New Roman', Times, serif;
+    width: 20vh;
+    height: 80px;
+    background-color: lightgreen;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.main #section-p1{
+    padding: 70px 40px;
+}
+.main .feature{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.main .feature .fe-box{
+    text-align: center;
+    width: 180px;
+    padding: 20px 5px;
+    box-shadow: 20px 20px 35px rgb(0, 0, 0,0.3);
+    border: 1px solid #cce7d0;
+    margin: 20px 20px;
+    border-radius: 5px;
+}
+.main .feature .fe-box:hover{
+    box-shadow: 10px 10px 55px rgb(70, 62, 221,0.1);
+}
+.main .feature img{
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+.main .feature .fe-box h6{
+    font-size: x-large;
+    padding: 9px 8px 6px 8px;
+    line-height: 1;
+    border-radius: 4px;
+    background-color: #fddde4;
+    color: #088178;
+}
+.main .feature .fe-box:nth-child(2) h6{
+    background-color: #cdebbc;
+}
+.main .feature .fe-box:nth-child(3) h6{
+    background-color: #d1e8f2;
+}
+.main .feature .fe-box:nth-child(4) h6{
+    background-color: #cdd4f8;
+}
+.main .feature .fe-box:nth-child(5) h6{
+    background-color: #f6dbf6;
+}
+.main .feature .fe-box:nth-child(6) h6{
+    background-color: #fff2e5;
 }
