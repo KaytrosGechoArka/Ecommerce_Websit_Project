@@ -13,6 +13,9 @@
     top: 0%;
     left: 0%;
 }
+.header .nav{
+    position: relative;
+}
 .header .nav .logo{
     position: absolute;
     text-decoration: none;
@@ -20,6 +23,12 @@
     font-family: 'Henny Penny', cursive;
     margin: 25px 40px;
     font-size: xx-large;
+}
+.header .nav .menu{
+    float: left;
+    visibility:hidden;
+    margin-left: 95%;
+    margin-top: -80px;
 }
 .header .nav .nav-bar{
     float: right;
@@ -35,17 +44,39 @@
     text-decoration: none;
     padding: 20px;
 }
-.header .nav .nav-bar ul li a:hover,.header .nav .nav-bar ul li a:active{
-    color:white;
-    background-color:lightblue;
-    transition: 2s ease-in-out;
+.header .nav .nav-bar ul li a:hover,.header .nav .nav-bar ul li a.active{
+    border-bottom:4px solid #088178;
+    color:#088178;
+    transition: 0.15s ease-in-out;
+}
+@media screen and(max-width:799px) {
+    .header .nav .nav-bar ul{
+        background-color: #E3E6F3;
+        box-shadow: 0px 40px 60px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    .header .nav .menu{
+        visibility: visible;
+    }
+    .header .nav .nav-bar ul li{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        list-style: none;
+        padding: 0px;
+        margin: 15px;
+    } 
+    .header .nav .nav-bar ul li a{
+        padding: 0px;
+    }
 }
 .main .hero{
     background-image: url('./images/pop.jpg');
     height: 88vh;
     width: 100%;
-    background-size: cover;
-    background-position: top 5% left 150%;
+    background-size:cover;
+    background-position: top 5% left -150%;
 }
 .main .hero .div{
     position: absolute;
@@ -66,15 +97,19 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 0px 0px 15px;
     font-size: 45px;
+    color: #000;
 
 }
 .main .hero .div h4{
     font-size: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #088178;
 }
 .main .hero .div p{
     font-style: italic;
     font-family: 'Courier New', Courier, monospace;
+    color: blueviolet;
+    font-weight: 600;
 }
 .main .hero .div .btn{
     padding: 15px;
@@ -422,10 +457,12 @@ footer .col h4,.follow h4 {
     font-size:larger;
     margin-bottom: 30px;
 }
-.footer .col span{
+.footer .logo span{
     font-family: 'Great Vibes', cursive;
     font-family: 'Henny Penny', cursive;
     font-size:xx-large;
+    color: blueviolet;
+    margin-left: -30px;
 }
 .footer .follow i{
     width: 20px;
@@ -469,25 +506,3 @@ footer .follow .fa-twitter{
     color: blueviolet;
     border-radius: 5px;
 }
-@media (max-width:799px) {
-    .header .nav .nav-bar ul{
-        background-color: #E3E6F3;
-        box-shadow: 0px 40px 60px rgba(0, 0, 0, 0.1);
-        display: none;
-    }
-    .header .nav .nav-bar ul li{
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        list-style: none;
-        padding: 0px;
-        margin: 15px;
-    } 
-    .header .nav .nav-bar ul li a{
-        padding: 0px;
-    }
-}
-
-
-
