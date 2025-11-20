@@ -1,0 +1,285 @@
+{{-- /resources/views/courses/learning/index.blade.php --}}
+@php
+    // Example data if controller didn't pass any. Replace with real $lessons from your controller.
+    $lessons = $lessons ?? [
+        ['id'=>1,'title'=>'Welcome & Overview','type'=>'video','src'=>'https://www.w3schools.com/html/mov_bbb.mp4','duration'=>'3:12','description'=>'Course introduction.'],
+        ['id'=>2,'title'=>'Setup Environment','type'=>'content','src'=>'','duration'=>'5:02','description'=>'Step-by-step environment setup with terminal commands and links.'],
+        ['id'=>3,'title'=>'First Feature Demo','type'=>'video','src'=>'https://www.w3schools.com/html/movie.mp4','duration'=>'8:40','description'=>'Demonstration of the first feature.'],
+        ['id'=>4,'title'=>'Deep Dive Notes','type'=>'content','src'=>'','duration'=>'6:20','description'=>'Detailed notes, code snippets and explanation.'],
+    ];
+    $first = $lessons[0] ?? null;
+@endphp
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Course Learning</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        :root{
+            --sidebar-w:360px;
+            --gap:16px;
+            --accent:#a435f0;
+            --muted:#9ca3af;
+        }
+        *{box-sizing:border-box}
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:#f5f6f8;color:#111}
+        .app{display:flex;height:100vh;gap:var(--gap);padding:var(--gap)}
+        .sidebar{width:var(--sidebar-w);min-width:220px;background:#fff;border-radius:8px;padding:12px;overflow:auto;box-shadow:0 6px 18px rgba(20,20,40,.06)}
+        .segmented{display:inline-flex;border-radius:999px;background:#f3f4f6;padding:4px;border:1px solid #ececec;gap:4px;margin-bottom:12px}
+        .seg-btn{padding:8px 12px;border-radius:999px;border:0;background:transparent;color:#374151;cursor:pointer;font-weight:600;font-size:13px}
+        .seg-btn.active{background:linear-gradient(90deg,var(--accent),#7b2be6);color:#fff;box-shadow:0 6px 18px rgba(164,53,240,.12)}
+        .list{margin-top:6px}
+        .section{font-size:13px;color:#374151;margin:10px 2px}
+        .item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;cursor:pointer}
+        .item:hover{background:#f6f7fb}
+        .item.active{background:linear-gradient(90deg,#fff6ff,rgba(164,53,240,0.05));border-left:3px solid var(--accent);padding-left:5px}
+        .thumb{width:56px;height:40px;background:#f3f0fb;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+        .completed-badge{background:#e9f7ef;color:#0f9d58;padding:4px 6px;border-radius:999px;font-size:12px;margin-left:auto}
+        .ai-panel{display:none;margin-top:6px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fbfbff,#ffffff);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+        .ai-input{display:flex;gap:8px;margin-bottom:10px}
+        .ai-input input{flex:1;padding:8px 10px;border:1px solid #e6e9ee;border-radius:6px}
+        .ai-suggestion{padding:10px;border-radius:6px;background:#fff;border:1px solid #f0eff8;margin-bottom:8px}
+        .main{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+        .player{background:#000;border-radius:10px;position:relative;overflow:hidden;min-height:320px;display:flex;align-items:center;justify-content:center}
+        .player video, .player iframe{width:100%;height:100%;display:block;object-fit:contain}
+        .player .placeholder{color:#fff;padding:20px;text-align:center}
+        .controls{display:flex;align-items:center;justify-content:space-between}
+        .content-card{background:white;padding:14px;border-radius:8px;box-shadow:0 6px 18px rgba(20,20,40,.04);overflow:auto;height:260px}
+        .actions{display:flex;gap:8px}
+        .btn{padding:8px 12px;border-radius:6px;border:0;cursor:pointer}
+        .btn.ghost{background:#fff;border:1px solid #e6e9ee}
+        .btn.primary{background:var(--accent);color:#fff}
+        .cancel-btn{font-size:18px;line-height:1;padding:6px 10px;border-radius:6px;background:#fff;border:1px solid #e6e9ee;cursor:pointer}
+        @media (max-width:900px){
+            .app{flex-direction:column;padding:10px}
+            .sidebar{width:100%}
+            .main{width:100%}
+            .content-card{height:auto}
+            .player{min-height:200px}
+        }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <main class="main">
+        <div class="player" id="player" aria-live="polite">
+            <video id="videoPlayer" controls preload="metadata" style="display:none;background:black"></video>
+            <div id="placeholder" class="placeholder"></div>
+        </div>
+
+        <div class="controls" style="align-items:flex-start">
+            <div style="display:flex;gap:12px;align-items:center;flex:1;min-width:0">
+                <div style="min-width:0">
+                    <h3 id="lessonTitle" style="margin:0;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $first['title'] ?? 'No lesson selected' }}</h3>
+                    <div id="lessonType" style="font-size:13px;color:#6b7280;padding:4px 8px;border-radius:6px;background:#f3f4f6;display:inline-block;margin-top:6px">{{ strtoupper($first['type'] ?? '') }}</div>
+                </div>
+            </div>
+            <div class="actions">
+                <button id="markComplete" class="btn ghost" title="Mark lesson as complete">Mark Complete</button>
+                <button id="openDesc" class="btn ghost" title="Toggle description">Toggle Description</button>
+                <button id="nextLesson" class="btn primary" title="Next lesson">Next ▶</button>
+            </div>
+        </div>
+
+        <div class="content-card" id="contentCard">
+            <div id="lessonDesc">{!! nl2br(e($first['description'] ?? 'Select a lesson on the left to begin.')) !!}</div>
+        </div>
+    </main>
+
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar with two views">
+        <!-- I need the toggling button between sidebard and main one that work perfectly -->
+        <!-- Only the two buttons are visible as requested -->
+        <div class="segmented" role="tablist" aria-label="Sidebar views">
+            <button id="curriculumBtn" class="seg-btn active" role="tab" aria-selected="true">Curriculum</button>
+            <button id="aiBtn" class="seg-btn" role="tab" aria-selected="false">AI Assistant</button>
+        </div>
+
+        <!-- Curriculum list (shown when Curriculum button active) -->
+        <div id="curriculumView">
+            <div class="list" id="lessonList">
+                @foreach($lessons as $lesson)
+                    <div class="item {{ $loop->first ? 'active' : '' }}" data-id="{{ $lesson['id'] }}" data-type="{{ $lesson['type'] }}" data-src="{{ $lesson['src'] }}" data-title="{{ e($lesson['title']) }}" data-desc="{{ e($lesson['description']) }}" data-complete="false" role="button" tabindex="0">
+                        <div class="thumb">{{ strtoupper(substr($lesson['type'],0,1)) }}</div>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $lesson['title'] }}</div>
+                            <div class="meta">{{ $lesson['duration'] ?? '' }}</div>
+                        </div>
+                        <div class="completed-badge" style="display:none">Completed</div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- AI Assistant panel (shown when AI button active) -->
+        <div class="ai-panel" id="aiPanel" aria-hidden="true">
+            <div class="ai-input">
+                <input id="aiQuery" placeholder="Ask the course assistant for help (e.g., 'Explain setup steps')" />
+                <button id="aiAsk" class="btn primary">Ask</button>
+            </div>
+            <div id="aiResults">
+                <div class="ai-suggestion"><strong>Tip:</strong> Use the AI assistant to summarize lessons, get code snippets, or ask for clarifications.</div>
+                <div class="ai-suggestion" id="aiPlaceholder">No queries yet.</div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<script>
+    (function(){
+        const list = document.getElementById('lessonList');
+        const items = list ? Array.from(list.querySelectorAll('.item')) : [];
+        const video = document.getElementById('videoPlayer');
+        const placeholder = document.getElementById('placeholder');
+        const titleEl = document.getElementById('lessonTitle');
+        const typeEl = document.getElementById('lessonType');
+        const descEl = document.getElementById('lessonDesc');
+        const contentCard = document.getElementById('contentCard');
+        const openDesc = document.getElementById('openDesc');
+        const markComplete = document.getElementById('markComplete');
+        const nextBtn = document.getElementById('nextLesson');
+
+        const curriculumBtn = document.getElementById('curriculumBtn');
+        const aiBtn = document.getElementById('aiBtn');
+        const aiPanel = document.getElementById('aiPanel');
+        const curriculumView = document.getElementById('curriculumView');
+        const aiAsk = document.getElementById('aiAsk');
+        const aiQuery = document.getElementById('aiQuery');
+        const aiResults = document.getElementById('aiResults');
+        const aiPlaceholder = document.getElementById('aiPlaceholder');
+
+        function setActiveLesson(el){
+            items.forEach(i=>i.classList.remove('active'));
+            if(el) el.classList.add('active');
+        }
+
+        function loadLesson(el){
+            if(!el) return;
+            const type = el.dataset.type;
+            const src = el.dataset.src;
+            const title = el.dataset.title;
+            const desc = el.dataset.desc;
+            titleEl.textContent = title || 'No lesson selected';
+            typeEl.textContent = type ? type.toUpperCase() : '';
+            descEl.innerHTML = desc ? desc.replace(/\n/g,'<br>') : '<em>No description provided.</em>';
+
+            const completed = el.dataset.complete === 'true';
+            markComplete.textContent = completed ? 'Completed' : 'Mark Complete';
+            markComplete.disabled = completed;
+
+            if(type === 'video' && src){
+                placeholder.style.display = 'none';
+                video.style.display = 'block';
+                if(video.querySelector('source')){
+                    video.querySelector('source').src = src;
+                } else {
+                    video.innerHTML = '<source src="'+src+'">';
+                }
+                video.load();
+                setTimeout(()=>{ try{ video.play(); }catch(e){} },200);
+            } else {
+                try{ video.pause(); }catch(e){}
+                video.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = '<div style="padding:18px;color:#fff;opacity:.95">'+ (desc || 'No content to display') +'</div>';
+            }
+        }
+
+        // Init first lesson
+        const first = list ? list.querySelector('.item.active') || list.querySelector('.item') : null;
+        if(first){ loadLesson(first); updateCompletedBadge(first); }
+
+        items.forEach((i)=>{
+            i.addEventListener('click', function(){
+                setActiveLesson(this);
+                loadLesson(this);
+            });
+            i.addEventListener('keydown', function(e){
+                if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); }
+            });
+        });
+
+        openDesc.addEventListener('click', ()=>{
+            const isHidden = getComputedStyle(contentCard).display === 'none';
+            contentCard.style.display = isHidden ? '' : 'none';
+        });
+
+        markComplete.addEventListener('click', ()=>{
+            const active = list.querySelector('.item.active');
+            if(!active) return;
+            active.dataset.complete = 'true';
+            updateCompletedBadge(active);
+            markComplete.textContent = 'Completed';
+            markComplete.disabled = true;
+        });
+
+        function updateCompletedBadge(el){
+            const badge = el.querySelector('.completed-badge');
+            if(el.dataset.complete === 'true') badge.style.display = 'block';
+            else badge.style.display = 'none';
+        }
+
+        nextBtn.addEventListener('click', ()=>{
+            const idx = items.findIndex(i=>i.classList.contains('active'));
+            if(idx === -1) return;
+            const next = items[idx+1];
+            if(next) next.click();
+            else alert('You have reached the last lesson in this preview.');
+        });
+
+        video.addEventListener('ended', function(){
+            const active = list.querySelector('.item.active');
+            if(active && active.dataset.type === 'video'){
+                active.dataset.complete = 'true';
+                updateCompletedBadge(active);
+            }
+        });
+
+        // Toggle views - only two buttons control visibility
+        function showCurriculum(){
+            curriculumBtn.classList.add('active');
+            curriculumBtn.setAttribute('aria-selected','true');
+            aiBtn.classList.remove('active');
+            aiBtn.setAttribute('aria-selected','false');
+            curriculumView.style.display = '';
+            aiPanel.style.display = 'none';
+            aiPanel.setAttribute('aria-hidden','true');
+        }
+        function showAI(){
+            aiBtn.classList.add('active');
+            aiBtn.setAttribute('aria-selected','true');
+            curriculumBtn.classList.remove('active');
+            curriculumBtn.setAttribute('aria-selected','false');
+            curriculumView.style.display = 'none';
+            aiPanel.style.display = '';
+            aiPanel.setAttribute('aria-hidden','false');
+        }
+        curriculumBtn.addEventListener('click', showCurriculum);
+        aiBtn.addEventListener('click', showAI);
+
+        // Mock AI assistant behavior (client-side example)
+        aiAsk.addEventListener('click', function(){
+            const q = (aiQuery.value || '').trim();
+            if(!q) return;
+            const el = document.createElement('div');
+            el.className = 'ai-suggestion';
+            el.innerHTML = '<strong>Q:</strong> '+escapeHtml(q)+'<br><strong>A:</strong> ' + generateMockAnswer(q);
+            aiResults.insertBefore(el, aiPlaceholder.nextSibling);
+            aiQuery.value = '';
+        });
+
+        function generateMockAnswer(q){
+            if(/setup|install|environment/i.test(q)) return 'Run the provided setup commands in order. Check PATH and PHP version. Refer to the "Setup Environment" lesson for details.';
+            if(/summary|summarize/i.test(q)) return 'This course covers the basics, setup, feature demo, and deep dive notes. Focus first on environment setup, then demo.';
+            return 'Try asking for a concise summary of the current lesson or request example code.';
+        }
+        function escapeHtml(s){ return s.replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+        // default view
+        showCurriculum();
+
+    })();
+</script>
+</body>
+</html>
